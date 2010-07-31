@@ -83,7 +83,7 @@ class WebSocketRequest(Request):
         if not handlerFactory:
             return finish()
         transport = WebSocketTransport(self)
-        handler = handlerFactory(transport)
+        handler = handlerFactory(transport, self.site)
         transport._attachHandler(handler)
 
         # key1 and key2 exist and are a string of characters
@@ -134,7 +134,7 @@ class WebSocketRequest(Request):
             else:
                 protocolHeader = None
 
-            handler = handlerFactory(transport)
+            handler = handlerFactory(transport, self.site)
             check = originHeaders[0], hostHeaders[0], protocolHeader, handler
 
             originHeader, hostHeader, protocolHeader, handler = check
@@ -197,7 +197,7 @@ class WebSocketRequest(Request):
         if not handlerFactory:
             return finish()
         transport = WebSocketTransport(self)
-        handler = handlerFactory(transport)
+        handler = handlerFactory(transport, self.site)
         transport._attachHandler(handler)
 
         protocolHeaders = self.requestHeaders.getRawHeaders(
@@ -346,11 +346,12 @@ class WebSocketHandler(object):
     @type: L{WebSocketTransport}
     """
 
-    def __init__(self, transport):
+    def __init__(self, transport, site):
         """
         Create the handler, with the given transport
         """
         self.transport = transport
+        self.site = site
 
 
     def frameReceived(self, frame):

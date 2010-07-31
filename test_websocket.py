@@ -41,8 +41,8 @@ class TestHandler(WebSocketHandler):
     @ivar lostReason: reason for connection closing.
     """
 
-    def __init__(self, request):
-        WebSocketHandler.__init__(self, request)
+    def __init__(self, request, site):
+        WebSocketHandler.__init__(self, request, site)
         self.frames = []
         self.lostReason = None
 
@@ -95,8 +95,8 @@ class WebSocketSiteTestCase(TestCase):
         A resource name can consist of several path elements.
         """
         handlers = []
-        def handlerFactory(request):
-            handler = TestHandler(request)
+        def handlerFactory(request, site):
+            handler = TestHandler(request, site)
             handlers.append(handler)
             return handler
         self.site.addHandler("/foo/bar", handlerFactory)
@@ -110,8 +110,8 @@ class WebSocketSiteTestCase(TestCase):
         A resource name may contain query arguments.
         """
         handlers = []
-        def handlerFactory(request):
-            handler = TestHandler(request)
+        def handlerFactory(request, site):
+            handler = TestHandler(request, site)
             handlers.append(handler)
             return handler
         self.site.addHandler("/test?foo=bar&egg=spam", handlerFactory)
@@ -273,8 +273,8 @@ class WebSocketSiteTestCase(TestCase):
         C{frameReceived} is called with the received frames after handshake.
         """
         handlers = []
-        def handlerFactory(request):
-            handler = TestHandler(request)
+        def handlerFactory(request, site):
+            handler = TestHandler(request, site)
             handlers.append(handler)
             return handler
         self.site.addHandler("/test2", handlerFactory)
@@ -368,7 +368,7 @@ class WebSocketFrameDecoderTestCase(TestCase):
         self.channel = DummyChannel()
         request = Request(self.channel, False)
         transport = WebSocketTransport(request)
-        handler = TestHandler(transport)
+        handler = TestHandler(transport, None)
         transport._attachHandler(handler)
         self.decoder = WebSocketFrameDecoder(request, handler)
         self.decoder.MAX_LENGTH = 100
@@ -468,7 +468,7 @@ class WebSocketHandlerTestCase(TestCase):
         # Simulate request handling
         request.startedWriting = True
         transport = WebSocketTransport(request)
-        self.handler = TestHandler(transport)
+        self.handler = TestHandler(transport, None)
         transport._attachHandler(self.handler)
 
 

@@ -20,8 +20,8 @@ from websocket import WebSocketHandler, WebSocketSite
 
 
 class Testhandler(WebSocketHandler):
-    def __init__(self, transport):
-        WebSocketHandler.__init__(self, transport)
+    def __init__(self, transport, site):
+        WebSocketHandler.__init__(self, transport, site)
         self.periodic_call = task.LoopingCall(self.send_time)
 
     def send_time(self):
